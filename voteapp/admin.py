@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, CategoryItem
+from .models import Category, CategoryItem, Faculty, Kafedra, Professor
 # Register your models here.
 
 
@@ -9,3 +9,5 @@ class CategoryAdmin(admin.ModelAdmin):
 
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(CategoryItem)
+
+

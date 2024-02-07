@@ -38,3 +38,27 @@ class CategoryItem(models.Model):
     
     def __str__(self):
         return self.title
+
+
+class Faculty(models.Model):
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return self.name
+
+class Kafedra(models.Model):
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return f"{self.faculty.name} | {self.name}"
+
+class Professor(models.Model):
+    photo = models.ImageField(upload_to='images')
+    name = models.CharField(max_length=200)
+    kafedra = models.ForeignKey(Kafedra, on_delete=models.CASCADE)
+    work_year = models.DateField()
+    stuff = models.CharField(max_length=200)
+    def __str__(self):
+        return self.name, self.stuff
+    
+    
+    
