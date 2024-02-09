@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-
-
 class Category(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(blank=True, null=True)
@@ -40,16 +38,27 @@ class CategoryItem(models.Model):
         return self.title
 
 
+class Vote(models.Model):
+    name = models.CharField(max_length=200)
+    start = models.DateField()
+    finish = models.DateField()
+    def __str__(self):
+        return self.name
+    
+
 class Faculty(models.Model):
+    vote = models.ForeignKey(Vote, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     def __str__(self):
         return self.name
+
 
 class Kafedra(models.Model):
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     def __str__(self):
         return f"{self.faculty.name} | {self.name}"
+
 
 class Professor(models.Model):
     photo = models.ImageField(upload_to='images')
@@ -58,7 +67,24 @@ class Professor(models.Model):
     work_year = models.DateField()
     stuff = models.CharField(max_length=200)
     def __str__(self):
-        return self.name, self.stuff
+        return self.name
+      
+
+class VoteItems(models.Model):
+    OPTIONS = [
+        ("A'lo", "A'lo"),
+        ('Yaxshi', 'Yaxshi'),
+        ('Qoniqarli', 'Qoniqarli'),
+        ('Qoniqarsiz', 'Qoniqarsiz'),
+    ]
+    vote = models.ForeignKey(Vote, on_delete=models.CASCADE)
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
+    name = models.CharField(max_length=300)
+    options = models.CharField(max_length=20, choices=OPTIONS)
     
+    def __str__(self):
+        return self.professor.name
+    
+
     
     

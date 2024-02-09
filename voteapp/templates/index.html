@@ -9,25 +9,27 @@
     <div class="container-fluid px-lg-5">
         <div class="p-4 p-lg-5 bg-light rounded-3 text-center">
             <div class="m-4 m-lg-5">
-                
+
                 <h1 class="display-5 fw-bold">Elektron so'rovnoma</h1><br>
-                <p class="fs-4">Uchbu platforma - Qarshi muhandislik iqtisodiyot instituti professor-o‘qituvchilarini online baholash so'rovnomasiga hush kelibsiz. Ovoz berishda ishtirok etish uchun login va parolingiz orqali kirishingiz mumkin bo'ladi. Berilgan ovozlar holis tarzda berish mumkin. Ovoz beruvchilar shaxsini ochiqlanmasligini <b>Institut administratsiyasi</b> o'z zimmasiga oladi !</p><br>
+                <p class="fs-4">Uchbu platforma - Qarshi muhandislik iqtisodiyot instituti professor-o‘qituvchilarini
+                    online baholash so'rovnomasiga hush kelibsiz. Ovoz berishda ishtirok etish uchun login va parolingiz
+                    orqali kirishingiz mumkin bo'ladi. Berilgan ovozlar holis tarzda berish mumkin. Ovoz beruvchilar
+                    shaxsini ochiqlanmasligini <b>Institut administratsiyasi</b> o'z zimmasiga oladi !</p><br>
                 <a class="btn btn-primary btn-lg" href="#votingSection">Ishtirok etish</a>
             </div>
         </div>
     </div>
 </header>
 <!-- Page Content-->
-<section class="pt-4" id="votingSection">
+{% comment %} <section class="pt-4" id="votingSection">
     <div class="container px-lg-5">
         <!-- Page Features-->
         <div class="row gx-lg-5">
 
-            
-            
-            
-            {% for category in categories  %}
 
+
+
+            <!-- {% for category in categories  %}
             <div class="col-lg-4 col-xxl-3 mb-5">
                 <div class="card bg-light border-0 h-100">
                     <div class="card-body text-center p-4 p-lg-5 pt-0 pt-lg-0">
@@ -38,26 +40,50 @@
                     <a class="btn btn-primary btn-lg" href="{% url 'detail' category.slug  %}">Kirish</a>
                 </div>
             </div>
-
-          
-                
-            {% endfor %}
-                
-
-            
-                
-
-          
+            {% endfor %} -->
 
 
-        
+
+
+
+
+
+
+
+
 
         </div>
     </div>
-</section>
+</section> {% endcomment %}
+
+<div class="container" id="votingSection">
+    <h2 style="text-align: center;">Barcha so'rovnomalar</h2><br>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>So'rovnoma nomi</th>
+                <th>Boshlanish sanasi</th>
+                <th>Tugallanish sanasi</th>
+                <th>Ishtirokchilar soni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vote in Vote %}
+            <tr>
+                <td>{{ forloop.counter }}</td> 
+                <td><a href="{% url 'vote_detail' vote.id %}">{{ vote.name }}</a></td>
+                <td>{{ vote.start }}</td>  
+                <td>{{ vote.finish }}</td>
+                <td>{{ vote_user_counts.vote.id }}</td><!-- Corrected syntax -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table> <br><br><br><br>
+</div>
 
 
 
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 {% endblock content %}
-

@@ -2,28 +2,53 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Category, CategoryItem
-from django.views.generic import ListView
-# Create your views here.
+from .models import *
+
 
 def index(request):
-    categories = Category.objects.all()
-    context = {"categories":categories}
-    
-    return render(request, "index.html", context)
+    vote = Vote.objects.all()
+    contex = {
+        'Vote':vote,
+    }
+    return render(request, ['index.html'] , contex)
+
+                  
+# def vote_detail(request, vote_id):
+#     vote = Vote.objects.get(pk=vote_id)
+#     faculties = Faculty.objects.filter(vote=vote)
+#     for faculty in faculties:
+#         # Fetch the count of professors associated with each faculty
+#         faculty.professors_count = Professor.objects.filter(kafedra__faculty=faculty).count()
+#     return render(request, 'vote_details.html', {'vote': vote, 'faculties': faculties})
+
+
+
+
+
+
+def vote_detail(request, vote_id):
+    vote = Vote.objects.get(pk=vote_id)
+    faculties = Faculty.objects.filter(vote=vote)
+    for faculty in faculties:
+        professors_count = Professor.objects.filter(kafedra__faculty=faculty).count()
+        setattr(faculty, 'professors_count', professors_count)
+    return render(request, 'vote_details.html', {'vote': vote, 'faculties': faculties})
+
+
+
+
+
+
 
 @login_required(login_url="signin")
 def detail(request, slug):
     category = Category.objects.get(slug=slug)
     categories = CategoryItem.objects.filter(category=category)
-    
     msg = None
-    
     if request.user.is_authenticated:
         if category.voters.filter(id=request.user.id).exists():
             msg = "voted"
             
-    
     if request.method == 'POST':
         selected_id = request.POST.get("category_item")
         print(selected_id)

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br><br>
+<div class="container mt-5">
+    <h2 style="text-align: center;">" {{ vote.name }} " anketa so'rovi</h2><br>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Fakultet va kafedralar</th>
+                <th>Professor o'qituvchilar soni</th>
+                <th>So'rovnoma soni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for faculty in faculties %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                    <strong>{{ faculty.name }}</strong><br>
+                    {% if faculty.kafedra_set.all %}
+                        <table class="table">
+                            <tbody>
+                                {% for kafedra in faculty.kafedra_set.all %}
+                                    <tr>            
+                                        <td>{{ forloop.counter }}</td>
+                                        <td><a href="">{{ kafedra.name }}</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </td>
+                <td>
+                    <strong>{{ faculty.name }} fakulteti o'qituvchilari soni</strong><br>
+                    {% if faculty.kafedra_set.all %}
+                        <table class="table">
+                            <tbody>
+                                {% for kafedra in faculty.kafedra_set.all %}
+                                    <tr>            
+                                        <td>{{ forloop.counter }} ta</td>
+                                        
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </td>
+                <td>{{ faculty.vote.so_rovnoma_soni }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
