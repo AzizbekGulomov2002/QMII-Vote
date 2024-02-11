@@ -7,9 +7,15 @@ from django.conf.urls.static import static
 urlpatterns = [
      path("", views.index, name="index"),
      path('vote/<int:vote_id>/', views.vote_detail, name='vote_detail'),
-     # path('vote_detail', FacultyViews.as_view(), name='faculty'),
+
+     path('professors/<int:kafedra_id>/', views.professor_list, name='professors'),
+     path('vote/<int:professor_id>/', views.vote, name='vote'),
+     path('vote/', views.vote, name='vote'),
      
-     path("vote/<str:slug>", views.detail, name="detail"),
+     
+     path('success/', views.success, name='success'),
+     
+     # path("vote/<str:slug>", views.detail, name="detail"),
      path("result/<str:slug>", views.result, name="result"),
      path("result", views.result, name="result"),
      path("signin", views.signin, name= "signin"),

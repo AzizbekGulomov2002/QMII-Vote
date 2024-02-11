@@ -1,0 +1,33 @@
+<!-- professors.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<br><br>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Professor - O'qituvchilar va Talabalar Nigohida Anketa</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Rasm</th>
+                <th>F.I.O</th>
+                <th>Lavozimi</th>
+                <th>Ishga kirgan yili</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for professor in professors %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><img src="{{ professor.photo.url }}" alt="{{ professor.name }}" style="width: 80px; height: 80px; border-radius: 50%;"></td>
+                <!-- Update the link to redirect to the 'vote' view with professor.id -->
+                <td><a href="{% url 'vote' professor.id %}">{{ professor.name }}</a></td>
+                <td>{{ professor.stuff }}</td>
+                <td>{{ professor.work_year|date:"Y" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

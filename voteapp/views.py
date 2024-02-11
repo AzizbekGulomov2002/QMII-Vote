@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from voteapp.forms import VoteForm
 from .models import *
-
+from django.http import HttpResponse
 
 def index(request):
     vote = Vote.objects.all()
@@ -13,19 +15,11 @@ def index(request):
     return render(request, ['index.html'] , contex)
 
                   
-# def vote_detail(request, vote_id):
-#     vote = Vote.objects.get(pk=vote_id)
-#     faculties = Faculty.objects.filter(vote=vote)
-#     for faculty in faculties:
-#         # Fetch the count of professors associated with each faculty
-#         faculty.professors_count = Professor.objects.filter(kafedra__faculty=faculty).count()
-#     return render(request, 'vote_details.html', {'vote': vote, 'faculties': faculties})
+def professor_list(request, kafedra_id):
+    professors = Professor.objects.filter(kafedra_id=kafedra_id)
+    return render(request, 'professors.html', {'professors': professors})
 
-
-
-
-
-
+@login_required(login_url="signin")
 def vote_detail(request, vote_id):
     vote = Vote.objects.get(pk=vote_id)
     faculties = Faculty.objects.filter(vote=vote)
@@ -35,9 +29,21 @@ def vote_detail(request, vote_id):
     return render(request, 'vote_details.html', {'vote': vote, 'faculties': faculties})
 
 
+def vote(request, professor_id):
+    professor = Professor.objects.get(id=professor_id)
+    vote_items = VoteItems.objects.filter(professor=professor)
+    context = {
+        'professor': professor,
+        'vote_items': vote_items,
+    }
+    return render(request, 'vote.html', context)
 
 
 
+
+
+def success(request):
+    return render(request, 'success.html')  # O'zgartirish: Muvaffaqiyat sahifasining nomi
 
 
 @login_required(login_url="signin")
@@ -69,6 +75,15 @@ def detail(request, slug):
     
     context = {"category": category, "categories": categories, "msg": msg}
     return render(request, "detail.html", context)
+
+
+
+
+
+
+
+
+
 
 def result(request, slug):
     category = Category.objects.get(slug=slug)

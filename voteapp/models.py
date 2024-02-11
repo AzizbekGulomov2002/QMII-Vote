@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.utils import timezone
 # Create your models here.
 
 class Category(models.Model):
@@ -42,6 +42,10 @@ class Vote(models.Model):
     name = models.CharField(max_length=200)
     start = models.DateField()
     finish = models.DateField()
+    
+    # def is_active(self):
+    #     return self.finish >= timezone.now().date()
+    
     def __str__(self):
         return self.name
     
