@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+
 # Create your models here.
 
 class Category(models.Model):
@@ -74,21 +75,27 @@ class Professor(models.Model):
         return self.name
       
 
+
+class Option(models.Model):
+    name = models.CharField(max_length=20)
+    def __str__(self):
+        return self.name
+
+
 class VoteItems(models.Model):
-    OPTIONS = [
-        ("A'lo", "A'lo"),
-        ('Yaxshi', 'Yaxshi'),
-        ('Qoniqarli', 'Qoniqarli'),
-        ('Qoniqarsiz', 'Qoniqarsiz'),
-    ]
     vote = models.ForeignKey(Vote, on_delete=models.CASCADE)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
     name = models.CharField(max_length=300)
-    options = models.CharField(max_length=20, choices=OPTIONS)
-    
+    options = models.ManyToManyField(Option)  # Changed to ManyToManyField
+
     def __str__(self):
         return self.professor.name
     
 
-    
-    
+
+class Statistics(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    result = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.user.username}'s result"

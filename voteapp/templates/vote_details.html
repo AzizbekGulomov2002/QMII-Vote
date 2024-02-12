@@ -10,7 +10,7 @@
                 <th>№</th>
                 <th style="text-align: center;">Fakultet va kafedralar</th>
                 <th style="text-align: center;">Professor o'qituvchilar soni</th>
-                <th>So'rovnoma soni</th>
+                {% comment %} <th>So'rovnoma soni</th> {% endcomment %}
             </tr>
         </thead>
         <tbody>
@@ -47,7 +47,7 @@
                         </table>
                     {% endif %}
                 </td>
-                <td>{{ faculty.vote.so_rovnoma_soni }}</td>
+                {% comment %} <td>{{ faculty.vote.so_rovnoma_soni }}</td> {% endcomment %}
             </tr>
             {% endfor %}
         </tbody>
