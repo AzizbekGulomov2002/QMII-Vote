@@ -3,119 +3,86 @@
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{{ professor.name }}'s Vote Items</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <style>
-            body {
-                background-color: #f8f9fa; /* light gray background */
-                color: #343a40; /* dark gray text */
-                font-family: Arial, sans-serif; /* fallback font */
-            }
-            table {
-                margin: auto;
-                border-collapse: collapse;
-                width: 80%; /* adjust width as needed */
-            }
-            th, td {
-                padding: 8px;
-                text-align: left;
-                border: 1px solid #dee2e6; /* light gray border */
-            }
-            h2, h3 {
-                color: #343a40; /* dark gray headings */
-                text-align: center;
-            }
-            .form-check {
-                margin-bottom: 10px; /* spacing between radio options */
-            }
-            .btn-primary {
-                background-color: #007bff; /* primary button color */
-                border-color: #007bff; /* primary button border color */
-            }
-            .btn-primary:hover {
-                background-color: #0056b3; /* darker shade on hover */
-                border-color: #0056b3; /* darker shade on hover */
-            }
-            .thank-you-message {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                padding: 10px;
-                background-color: #28a745; /* green background */
-                color: #fff; /* white text */
-                border-radius: 5px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* shadow effect */
-                z-index: 9999; /* higher z-index to ensure it's on top */
-            }
-        </style>
-    </head>
-    <body>
-        <br><br><br><br>
-        <form id="vote-form" action="{% url 'result' %}" method="post" class="text-center">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ professor.name }}'s Vote Items</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Your custom styles here */
+    </style>
+</head>
+
+<body>
+    <br><br><br><br><br><br><br><br>
+    <div class="container mt-5">
+        <h2>{{ tag_question.name }}</h2>
+
+        <hr> <!-- Horizontal line to separate professor info and vote items -->
+        <form id="vote-form" action="{% url 'submit_vote' professor_id=professor.id %}" method="post" class="text-center">
             {% csrf_token %}
-            <table>
-                <tr>
-                    <td colspan="2">
-                        <h2>{{ professor.name }}</h2>
-                        <h3>{{ professor.stuff }}</h3>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <hr> <!-- Horizontal line to separate professor info and vote items -->
-                    </td>
-                </tr>
-                {% for item in professor.voteitems_set.all %}
-                <tr>
-                    <td>{{ item.name }}</td>
-                    <td>
-                        {% for option in item.options.all %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="selected_option_{{ item.id }}" id="option_{{ item.id }}_{{ option.id }}" value="{{ option.id }}">
-                            <label class="form-check-label" for="option_{{ item.id }}_{{ option.id }}">{{ option }}</label>
-                        </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                {% endfor %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Questions</th>
+                        <th>Answer options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for question in tag_question.questions.all %}
+                    <tr>
+                        <td>{{ question.name }}</td>
+                        <td>
+                            {% for answer in question.answers.all %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="selected_option_{{ question.id }}"
+                                    id="option_{{ question.id }}_{{ answer.id }}" value="{{ answer.id }}">
+                                <label class="form-check-label" for="option_{{ question.id }}_{{ answer.id }}">{{
+                                    answer.item }}</label>
+                            </div>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
-            <button id="submit-btn" type="submit" class="btn btn-primary mt-3">So'rovnomani yakunlash</button>
+            <button id="submit-btn" type="submit" class="btn btn-primary mt-3">Submit Vote</button>
         </form>
-    
-        <div id="thank-you-message" class="thank-you-message" style="display: none;">
-            So'rovnomada ishtirok etganingiz uchun Rahmat! 
-        </div>
-    
-        <script>
-            // JavaScript for displaying alert and disabling form elements after form submission
-            document.getElementById('vote-form').addEventListener('submit', function(event) {
-                event.preventDefault(); // Prevent the form from submitting normally
-    
-                // Display the optimized "Thank you" message
-                var thankYouMessage = document.getElementById('thank-you-message');
-                thankYouMessage.style.display = 'block';
-    
-                // Disable form elements and submit button
-                var formElements = document.getElementById('vote-form').elements;
-                for (var i = 0; i < formElements.length; i++) {
-                    formElements[i].disabled = true;
-                }
-                document.getElementById('submit-btn').disabled = true;
-    
-                // Automatically close the "Thank you" message after 2 seconds
-                setTimeout(function() {
-                    thankYouMessage.style.display = 'none';
-                }, 5000); // 2000 milliseconds = 2 seconds
-    
-                // Redirect back to the main page after a delay (optional)
-                setTimeout(function() {
-                    window.location.href = "{% url 'index' %}";
-                }, 5000); // 2000 milliseconds = 2 seconds
-            });
-        </script>
-    </body>
+    </div>
+
+    <div id="thank-you-message" class="thank-you-message" style="display: none;">
+        Thank you for participating in the vote!
+    </div>
+
+    <script>
+        // JavaScript for displaying alert and disabling form elements after form submission
+        document.getElementById('vote-form').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+
+            // Display the optimized "Thank you" message
+            var thankYouMessage = document.getElementById('thank-you-message');
+            thankYouMessage.style.display = 'block';
+
+            // Disable form elements and submit button
+            var formElements = document.getElementById('vote-form').elements;
+            for (var i = 0; i < formElements.length; i++) {
+                formElements[i].disabled = true;
+            }
+            document.getElementById('submit-btn').disabled = true;
+
+            // Automatically close the "Thank you" message after 5 seconds
+            setTimeout(function () {
+                thankYouMessage.style.display = 'none';
+            }, 5000); // 5000 milliseconds = 5 seconds
+
+            // Redirect back to the main page after a delay (optional)
+            setTimeout(function () {
+                window.location.href = "{% url 'index' %}";
+            }, 5000); // 5000 milliseconds = 5 seconds
+        });
+    </script>
+</body>
+
 </html>
 {% endblock %}

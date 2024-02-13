@@ -3,14 +3,13 @@
 {% block content %}
 <br><br>
 <div class="container mt-5">
-    <h2 style="text-align: center;">" {{ vote.name }} " anketa so'rovi</h2><br>
+    <h2 style="text-align: center;"> Barcha fakultetlar va kafedralar</h2><br>
     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>№</th>
                 <th style="text-align: center;">Fakultet va kafedralar</th>
                 <th style="text-align: center;">Professor o'qituvchilar soni</th>
-                {% comment %} <th>So'rovnoma soni</th> {% endcomment %}
             </tr>
         </thead>
         <tbody>
@@ -40,14 +39,12 @@
                                 {% for kafedra in faculty.kafedra_set.all %}
                                     <tr>            
                                         <td>{{ kafedra.professor_set.count }} ta</td>
-                                        <!-- Fetch the count of professors associated with this department -->
                                     </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     {% endif %}
                 </td>
-                {% comment %} <td>{{ faculty.vote.so_rovnoma_soni }}</td> {% endcomment %}
             </tr>
             {% endfor %}
         </tbody>

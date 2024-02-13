@@ -1,58 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from datetime import datetime
 
 # Create your models here.
 
-class Category(models.Model):
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    total_vote = models.IntegerField(default=0)
-    voters = models.ManyToManyField(User, blank=True)
-    
-    def __str__(self):
-        return self.title
-    
-
-class CategoryItem(models.Model):
-    title = models.CharField(max_length=200)
-    total_vote = models.IntegerField(default=0)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="items")
-    voters = models.ManyToManyField(User, blank=True)
-    
-    @property
-    def percentage_vote(self):
-        category_votes = self.category.total_vote 
-        item_votes = self.total_vote
-        
-        if category_votes == 0:
-            vote_in_percentage = 0
-        
-        else:
-            vote_in_percentage = (item_votes/category_votes) * 100
-            
-        return vote_in_percentage
-    
-    
-    def __str__(self):
-        return self.title
-
-
-class Vote(models.Model):
-    name = models.CharField(max_length=200)
-    start = models.DateField()
-    finish = models.DateField()
-    
-    # def is_active(self):
-    #     return self.finish >= timezone.now().date()
-    
-    def __str__(self):
-        return self.name
-    
-
 class Faculty(models.Model):
-    vote = models.ForeignKey(Vote, on_delete=models.CASCADE)
+    # vote = models.ForeignKey("Vote", on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     def __str__(self):
         return self.name
@@ -73,29 +27,42 @@ class Professor(models.Model):
     stuff = models.CharField(max_length=200)
     def __str__(self):
         return self.name
-      
 
+class Question(models.Model):
+    name = models.CharField(max_length=200)
+    answers = models.ManyToManyField("Answers", related_name='question')
+    def str(self):
+        return self.name
+    
+class Answers(models.Model):
+    item = models.CharField(max_length=200)
+    def str(self):
+        return self.item
 
-class Option(models.Model):
-    name = models.CharField(max_length=20)
+class TagQuestions(models.Model):
+    name = models.CharField(max_length=200)
+    questions = models.ManyToManyField(Question, related_name='tag_questions')
+    start = models.DateField()
+    finish = models.DateField()
+    is_active = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if isinstance(self.finish, str):
+            self.finish = datetime.date.fromisoformat(self.finish)
+        
+        if self.finish and self.finish <= datetime.now().date():
+            self.is_active = False
+        super(TagQuestions, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
 
-class VoteItems(models.Model):
-    vote = models.ForeignKey(Vote, on_delete=models.CASCADE)
-    professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
-    name = models.CharField(max_length=300)
-    options = models.ManyToManyField(Option)  # Changed to ManyToManyField
+class Vote(models.Model):
+    datetime = models.DateTimeField(auto_now_add=True)
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name='votes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='votes')
+    tag_question = models.ForeignKey(TagQuestions, on_delete=models.CASCADE, related_name='votes')
 
     def __str__(self):
-        return self.professor.name
-    
-
-
-class Statistics(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    result = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"{self.user.username}'s result"
+        return f"Vote for {self.professor.name}"

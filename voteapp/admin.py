@@ -1,26 +1,37 @@
 from django.contrib import admin
-from .models import Category, CategoryItem, Vote,Faculty, Kafedra, Professor,VoteItems, Option
-# Register your models here.
+from .models import *
 
 
-class CategoryAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('title',)}
+
+@admin.register(Faculty)
+class FacultyAdmin(admin.ModelAdmin):
+    list_display = ['name']
+
+@admin.register(Kafedra)
+class KafedraAdmin(admin.ModelAdmin):
+    list_display = ['name', 'faculty']
+
+@admin.register(Professor)
+class ProfessorAdmin(admin.ModelAdmin):
+    list_display = ['name', 'kafedra', 'work_year', 'stuff']
+    list_filter = ['kafedra']
+    search_fields = ['name', 'stuff']
 
 
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(CategoryItem)
 
-admin.site.register(Faculty)
-admin.site.register(Kafedra)
-admin.site.register(Professor)
-admin.site.register(VoteItems)
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ['name']
 
+@admin.register(Answers)
+class AnswersAdmin(admin.ModelAdmin):
+    list_display = ['item']
 
-class VoteItemsInline(admin.TabularInline):
-    model = VoteItems
-    extra = 1  
-    
+@admin.register(TagQuestions)
+class TagQuestionsAdmin(admin.ModelAdmin):
+    list_display = ['name', 'start', 'finish', 'is_active']
+    filter_horizontal = ['questions']
+
+@admin.register(Vote)
 class VoteAdmin(admin.ModelAdmin):
-    inlines = [VoteItemsInline]
-admin.site.register(Vote, VoteAdmin)
-admin.site.register(Option)
+    list_display = ['datetime', 'professor', 'user', 'tag_question']

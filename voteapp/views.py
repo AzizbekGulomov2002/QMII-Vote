@@ -8,119 +8,56 @@ from django.http import HttpResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 
+@login_required(login_url="signin")
 def index(request):
-    vote = Vote.objects.all()
-    contex = {
-        'Vote':vote,
-    }
-    return render(request, ['index.html'] , contex)
-
-                  
-def professor_list(request, kafedra_id):
-    professors = Professor.objects.filter(kafedra_id=kafedra_id)
-    return render(request, 'professors.html', {'professors': professors})
+    tag_questions = TagQuestions.objects.all()
+    return render(request, 'index.html', {'tag_questions': tag_questions})
 
 @login_required(login_url="signin")
-def vote_detail(request, vote_id):
-    vote = Vote.objects.get(pk=vote_id)
-    faculties = Faculty.objects.filter(vote=vote)
-    for faculty in faculties:
-        professors_count = Professor.objects.filter(kafedra__faculty=faculty).count()
-        setattr(faculty, 'professors_count', professors_count)
-    return render(request, 'vote_details.html', {'vote': vote, 'faculties': faculties})
+def vote_detail(request, tag_question_id):
+    # Assuming tag_question_id is used to retrieve faculties, update it if necessary
+    faculties = Faculty.objects.all()
+    return render(request, 'vote_detail.html', {'faculties': faculties})
+    
 
-
+@login_required(login_url="signin")
 def vote(request, professor_id):
     professor = Professor.objects.get(id=professor_id)
-    
-    # Foydalanuvchining ovoz berish ma'lumotini tekshiramiz
-    user = request.user
-    if Result.objects.filter(professor=professor, user=user).exists():
-        messages.error(request, "Siz allaqachon ro'yxatdan o'tgan ekansiz.")
-        return redirect('index')
-    
-    # Professor ma'lumotlarini olish
-    vote_items = VoteItems.objects.filter(professor=professor)
-    
+    faculties = Faculty.objects.all()
     context = {
         'professor': professor,
-        'vote_items': vote_items,
+        'faculties': faculties,
     }
     return render(request, 'vote.html', context)
 
-
-def vote_item(request, professor_id):
-    if request.method == 'POST':
-        professor = Professor.objects.get(pk=professor_id)
-        selected_options = request.POST.dict()
-        user = request.user
-        if Result.objects.filter(professor=professor, user=user).exists():
-            messages.error(request, "You have already voted for this professor.")
-            return redirect('index')
-        for item_id, option_id in selected_options.items():
-            if item_id.startswith('selected_option_'):
-                item_id = int(item_id.split('_')[-1])
-                option_id = int(option_id)
-                item = professor.voteitems_set.get(pk=item_id)
-                selected_option = item.options.get(pk=option_id)
-                Result.objects.create(professor=professor, user=user, selected_option=selected_option)
-        return redirect('index')
-    professor = Professor.objects.get(pk=professor_id)
-    return render(request, 'vote_item.html', {'professor': professor})
-
-
 # def vote_item(request, professor_id):
-#     professor = get_object_or_404(Professor, pk=professor_id)
+#     if request.method == 'POST':
+#         professor = Professor.objects.get(pk=professor_id)
+#         selected_options = request.POST.dict()
+#         user = request.user
+#         if Result.objects.filter(professor=professor, user=user).exists():
+#             messages.error(request, "You have already voted for this professor.")
+#             return redirect('index')
+#         for item_id, option_id in selected_options.items():
+#             if item_id.startswith('selected_option_'):
+#                 item_id = int(item_id.split('_')[-1])
+#                 option_id = int(option_id)
+#                 item = professor.voteitems_set.get(pk=item_id)
+#                 selected_option = item.options.get(pk=option_id)
+#                 Result.objects.create(professor=professor, user=user, selected_option=selected_option)
+#         return redirect('index')
+#     professor = Professor.objects.get(pk=professor_id)
 #     return render(request, 'vote_item.html', {'professor': professor})
-
 
 @staff_member_required
 def statistics(request):
     user_results = Statistics.objects.all()
     print(user_results)
     return render(request, 'statistics.html', {'user_results': user_results})
-    
 
-
-
-@login_required(login_url="signin")
-def detail(request, slug):
-    category = Category.objects.get(slug=slug)
-    categories = CategoryItem.objects.filter(category=category)
-    msg = None
-    if request.user.is_authenticated:
-        if category.voters.filter(id=request.user.id).exists():
-            msg = "voted"
-            
-    if request.method == 'POST':
-        selected_id = request.POST.get("category_item")
-        print(selected_id)
-        item = CategoryItem.objects.get(id=selected_id)
-        item.total_vote += 1
-        
-        item_category = item.category 
-        item_category.total_vote += 1
-        
-        item.voters.add(request.user)
-        item_category.voters.add(request.user)
-        
-        item.save()
-        item_category.save()
-        
-        return redirect("result", slug=category.slug)
-        
-    
-    context = {"category": category, "categories": categories, "msg": msg}
-    return render(request, "detail.html", context)
-
-
-
-
-
-
-
-
-
+# def professor_list(request, kafedra_id):
+#     professors = Professor.objects.filter(kafedra_id=kafedra_id)
+#     return render(request, 'professors.html', {'professors': professors})
 
 def result(request, slug):
     category = Category.objects.get(slug=slug)
@@ -136,12 +73,9 @@ def signin(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            
             if "next" in request.POST:
                 return redirect(request.POST.get("next"))
-            
             else:
-            
                 return redirect("index")
         else:
             msg = "Invalid Credentials"
@@ -150,28 +84,47 @@ def signin(request):
     return render(request, "signin.html", context)
 
 def signup(request):
-
     form = UserCreationForm()
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            
             # login starts here
             username = request.POST['username']
             password = request.POST['password1']
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect("index")
-            
-            
+                return redirect("index")            
     context = {"form":form}
     return render(request, "signup.html", context)
-
-
 
 def signout(request):
     logout(request)
     return redirect("index")
 
+
+
+def professor_list(request, kafedra_id):
+    professors = Professor.objects.filter(kafedra_id=kafedra_id)
+    return render(request, 'professors.html', {'professors': professors})
+
+def vote_item(request, professor_id):
+    professor = get_object_or_404(Professor, id=professor_id)
+    vote = professor.votes.first()
+    if vote:
+        tag_question = vote.tag_question
+        return render(request, 'vote_item.html', {'professor': professor, 'tag_question': tag_question})
+    else:
+        return render(request, 'vote_item.html', {'professor': professor})
+
+
+def submit_vote(request, professor_id):
+    if request.method == 'POST':
+        professor = get_object_or_404(Professor, id=professor_id)
+        # Here you can process the form submission, save the vote, etc.
+        # For now, let's just redirect to the index page after voting
+        return redirect('index')
+    else:
+        # Handle GET request appropriately, maybe render an error page
+        pass
