@@ -7,26 +7,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ professor.name }}'s Vote Items</title>
+    <title>{{ professor.name }} ning so'rovnoma</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         /* Your custom styles here */
     </style>
 </head>
 
-<body>
-    <br><br><br><br><br><br><br><br>
+<body><br><br>
     <div class="container mt-5">
-        <h2>{{ tag_question.name }}</h2>
+        <h2 style="text-align: center;">" {{ tag_question.name }}" so'rovnomasi</h2>
+        <h3 style="text-align: center;">{{ professor.name }}</h3>
 
         <hr> <!-- Horizontal line to separate professor info and vote items -->
-        <form id="vote-form" action="{% url 'submit_vote' professor_id=professor.id %}" method="post" class="text-center">
+        <form id="vote-form" action="{% url 'submit_vote' %}" method="post" class="text-center">
             {% csrf_token %}
+            <input type="hidden" name="tag_question_id" value="{{ tag_question.id }}">
+            <input type="hidden" name="professor" value="{{ professor.id }}">
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Questions</th>
-                        <th>Answer options</th>
+                        <th>So'rovnoma</th>
+                        <th>Tanlov</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,12 +36,11 @@
                     <tr>
                         <td>{{ question.name }}</td>
                         <td>
-                            {% for answer in question.answers.all %}
+                            {% for answer in question.choices.all %}
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="selected_option_{{ question.id }}"
                                     id="option_{{ question.id }}_{{ answer.id }}" value="{{ answer.id }}">
-                                <label class="form-check-label" for="option_{{ question.id }}_{{ answer.id }}">{{
-                                    answer.item }}</label>
+                                <label class="form-check-label" for="option_{{ question.id }}_{{ answer.id }}">{{ answer.item }}</label>
                             </div>
                             {% endfor %}
                         </td>
@@ -47,41 +48,26 @@
                     {% endfor %}
                 </tbody>
             </table>
-            <button id="submit-btn" type="submit" class="btn btn-primary mt-3">Submit Vote</button>
+            <button id="submit-btn" type="submit" class="btn btn-primary mt-3">So'rovnomani yakunlash</button>
         </form>
     </div>
 
-    <div id="thank-you-message" class="thank-you-message" style="display: none;">
-        Thank you for participating in the vote!
+    <div id="thank-you-message" class="thank-you-message" style="display: none;text-align: center;color: green;">
+        So'rovnomada ishtirok etganingiz uchun rahmat
     </div>
 
     <script>
-        // JavaScript for displaying alert and disabling form elements after form submission
-        document.getElementById('vote-form').addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent the form from submitting normally
-
-            // Display the optimized "Thank you" message
-            var thankYouMessage = document.getElementById('thank-you-message');
-            thankYouMessage.style.display = 'block';
-
-            // Disable form elements and submit button
-            var formElements = document.getElementById('vote-form').elements;
-            for (var i = 0; i < formElements.length; i++) {
-                formElements[i].disabled = true;
-            }
-            document.getElementById('submit-btn').disabled = true;
-
-            // Automatically close the "Thank you" message after 5 seconds
-            setTimeout(function () {
-                thankYouMessage.style.display = 'none';
-            }, 5000); // 5000 milliseconds = 5 seconds
-
-            // Redirect back to the main page after a delay (optional)
-            setTimeout(function () {
-                window.location.href = "{% url 'index' %}";
-            }, 5000); // 5000 milliseconds = 5 seconds
+        // Show thank you message after form submission
+        document.getElementById("vote-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            document.getElementById("submit-btn").disabled = true; // disable submit button to prevent multiple submissions
+            document.getElementById("thank-you-message").style.display = "block"; // display thank you message
+            setTimeout(function() {
+                document.getElementById("vote-form").submit(); // submit form after 2 seconds
+            }, 2000);
         });
     </script>
+
 </body>
 
 </html>

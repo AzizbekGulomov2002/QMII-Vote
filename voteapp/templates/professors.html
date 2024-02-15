@@ -13,7 +13,6 @@
                     <th>F.I.O</th>
                     <th>Lavozimi</th>
                     <th>Ishga kirgan yili</th>
-                    <th>Vote</th>
                 </tr>
             </thead>
             <tbody>
@@ -21,10 +20,9 @@
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td><img src="{{ professor.photo.url }}" alt="{{ professor.name }}" style="width: 80px; height: 80px; border-radius: 50%;"></td>
-                    <td><a href="{% url 'vote_item' professor_id=professor.id %}">{{ professor.name }}</a></td>
+                    <td><a href="{% url 'vote_item' professor_id=professor.id tag_question_id=tag_question.id %}">{{ professor.name }}</a></td>
                     <td>{{ professor.stuff }}</td>
                     <td>{{ professor.work_year|date:"Y" }}</td>
-                    <td><a href="{% url 'vote_item' professor_id=professor.id %}">Vote</a></td>
                 </tr>
                 {% endfor %}
             </tbody>

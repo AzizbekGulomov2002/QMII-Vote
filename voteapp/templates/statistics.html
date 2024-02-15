@@ -1,54 +1,85 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistics</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa; /* light gray background */
-            color: #343a40; /* dark gray text */
-            font-family: Arial, sans-serif; /* fallback font */
-        }
-        table {
-            margin: auto;
-            border-collapse: collapse;
-            width: 80%; /* adjust width as needed */
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border: 1px solid #dee2e6; /* light gray border */
-        }
-        h2, h3 {
-            color: #343a40; /* dark gray headings */
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <br><br><br><br>
-    <h2 class="text-center">Foydalanuvchilar natijalari</h2>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th style="text-align: center;">Foydalanuvchilar</th>
-                <th style="text-align: center;">Natijalar</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user_result in user_results %}
-            <tr>
-                <td>{{ user_result.user.username }}</td>
-                <td>{{ user_result.result }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
-{% endblock %}
+<!-- Header -->
+<header class="py-5">
+    <div class="container-fluid px-lg-5">
+        <div class="p-4 p-lg-5 bg-light rounded-3 text-center">
+            <div class="m-4 m-lg-5">
+                <h1 class="display-5 fw-bold">Barcha so'rovnomalar</h1><br>
+            </div>
+        </div>
+    </div>
+</header>
+<style>
+    .triangle {
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent; /* Size of the triangle */
+        border-right: 5px solid transparent; /* Size of the triangle */
+        border-bottom: 8px solid black; /* Height of the triangle */
+    }
+
+    /* Style for the chart canvas */
+    .chart-canvas {
+        width: 200px; /* Adjust the width as needed */
+        height: 150px; /* Adjust the height as needed */
+    }
+</style>
+
+<div class="container" id="votingSection">
+    <h2 style="text-align: center;">Statistika</h2><br>
+    <div class="accordion" id="accordionExample">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div style="width: 80%;">  
+                            Professor: {{ vote_data.0.professor }}
+                        </div>
+                        <div style="width: 20%; text-align: right;"> <!-- Adjust the width as needed -->
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <div class="triangle"></div> <!-- Triangle shape for the drop-down arrow -->
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="chartDropdown">
+                                <!-- Dropdown items -->
+                            </div>
+                        </div>
+                    </div>
+                </h5>
+            </div>
+
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>So'rovnoma nomi</th>
+                                <th>Yaxshi</th>
+                                <th>Yomon</th>
+                                <th>Qoniqarli</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Talabalar nigohida</td> <!-- Display the name of the tag question -->
+                                <td>10 ta</td> 
+                                <td>5 ta</td>  
+                                <td>8 ta</td>  
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+{% endblock content %}

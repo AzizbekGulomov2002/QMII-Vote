@@ -24,7 +24,7 @@
                                 {% for kafedra in faculty.kafedra_set.all %}
                                     <tr>            
                                         <td>{{ forloop.counter }}</td>
-                                        <td><a href="{% url 'professors' kafedra_id=kafedra.id %}">{{ kafedra.name }}</a></td>
+                                        <td><a href="{% url 'professors' kafedra_id=kafedra.id tag_question_id=tag_question.id %}">{{ kafedra.name }}</a></td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

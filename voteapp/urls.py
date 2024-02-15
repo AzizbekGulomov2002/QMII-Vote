@@ -3,19 +3,19 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import professor_list, vote_item
-
+from .views import statistics
 urlpatterns = [
     path("", views.index, name="index"),
     # path('vote/<int:professor_id>/', views.vote_detail, name='vote_detail'),
     path('vote_detail/<int:tag_question_id>/', views.vote_detail, name='vote_detail'),
 
-    path('submit_vote/<int:professor_id>/', views.submit_vote, name='submit_vote'),
+    path('submit_vote/', views.submit_vote, name='submit_vote'),
 
     path('professors/', professor_list, name='professor_list'),
-    path('vote/<int:professor_id>/', vote_item, name='vote_item'),
+    path('vote/<int:professor_id>/<int:tag_question_id>/', vote_item, name='vote_item'),
 
-    path('statistics/', views.statistics, name='statistics'),
-    path('professors/<int:kafedra_id>/', views.professor_list, name='professors'),
+    path('statistics/', statistics, name='statistics'),
+    path('professors/<int:kafedra_id>/<int:tag_question_id>/', views.professor_list, name='professors'),
 
 
 
